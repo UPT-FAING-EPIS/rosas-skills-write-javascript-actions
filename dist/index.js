@@ -1,14 +1,22 @@
 "use strict";
-var __create = Object.create;
-var __defProp = Object.defineProperty;
-var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
-var __getOwnPropNames = Object.getOwnPropertyNames;
-var __getProtoOf = Object.getPrototypeOf;
-var __hasOwnProp = Object.prototype.hasOwnProperty;
-
-// src/main.js
 const https = require("https");
-const core = require("@actions/core");
+const fs = require("fs");
+
+// Inline implementation of @actions/core setOutput
+function setOutput(name, value) {
+  const filePath = process.env.GITHUB_OUTPUT;
+  if (filePath) {
+    fs.appendFileSync(filePath, `${name}=${value}\n`);
+  } else {
+    // Legacy method
+    process.stdout.write(`::set-output name=${name}::${value}\n`);
+  }
+}
+
+function setFailed(message) {
+  process.exitCode = 1;
+  process.stdout.write(`::error::${message}\n`);
+}
 
 function getJoke() {
   return new Promise((resolve, reject) => {
@@ -42,9 +50,9 @@ async function run() {
   try {
     const joke = await getJoke();
     console.log(joke);
-    core.setOutput("joke", joke);
+    setOutput("joke", joke);
   } catch (error) {
-    core.setFailed(error.message);
+    setFailed(error.message);
   }
 }
 
