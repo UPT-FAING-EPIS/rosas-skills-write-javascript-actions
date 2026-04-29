@@ -1,6 +1,5 @@
-"use strict";
-const https = require("https");
-const fs = require("fs");
+import https from "https";
+import fs from "fs";
 
 // Inline implementation of @actions/core setOutput
 function setOutput(name, value) {
@@ -8,14 +7,13 @@ function setOutput(name, value) {
   if (filePath) {
     fs.appendFileSync(filePath, `${name}=${value}\n`);
   } else {
-    // Legacy method
     process.stdout.write(`::set-output name=${name}::${value}\n`);
   }
 }
 
 function setFailed(message) {
   process.exitCode = 1;
-  process.stdout.write(`::error::${message}\n`);
+  process.stderr.write(`::error::${message}\n`);
 }
 
 function getJoke() {
